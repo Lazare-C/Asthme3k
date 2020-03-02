@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { GraphPage } from '../graph/graph.page'
 
 @Component({
   selector: 'app-home',
@@ -7,6 +8,8 @@ import { Component } from '@angular/core';
 })
 export class HomePage {
 
+ 
+  graph = GraphPage;
   constructor() {}
 
 }

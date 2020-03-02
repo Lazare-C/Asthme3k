@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="home" text="Retour"></ion-back-button>
+    </ion-buttons>
+    <ion-title>graph</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content padding>
+<button ion-button (click)="updateData()">Update Pie Chart Data</button>
+  <div>
+
+  <canvas baseChart [chartType]="'line'" [datasets]="chartData" [labels]="chartLabels" [options]="chartOptions"
+    [legend]="true" (chartClick)="onChartClick($event)">
+  </canvas>
+
+  </div>
+</ion-content>
