@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package fr.lazarec.asthme3000;
 
 import android.os.Bundle;
 
