@@ -8,6 +8,9 @@ import { GraphPageRoutingModule } from './graph-routing.module';
 
 import { GraphPage } from './graph.page';
 import { ChartsModule } from 'ng2-charts';
+
+import { BLE } from '@ionic-native/ble/ngx';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -15,6 +18,10 @@ import { ChartsModule } from 'ng2-charts';
     IonicModule,
     GraphPageRoutingModule,
     ChartsModule
+  ],
+  providers: [
+     BLE
+    
   ],
   declarations: [GraphPage]
 })

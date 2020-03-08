@@ -12,6 +12,8 @@ import {
 import { ChartEvent, ChartType } from 'ng-chartist';
 import { HTTP } from '@ionic-native/http/ngx';
 
+import { BLE } from '@ionic-native/ble/ngx';
+
 
 @Component({
   selector: 'app-graph',
@@ -28,11 +30,35 @@ import { HTTP } from '@ionic-native/http/ngx';
 export class GraphPage implements OnInit {
   
 
-  constructor() {}
 
+   ngOnInit() {
+  } 
+  devices: any[] = [];
+  public result: String = "Wsh bro";
+
+  
+  constructor(public ble: BLE) {
+
+
+  }
+
+  
+  scan() {
+    this.ble.startScan([]).subscribe(device => {
+      this.result = JSON.stringify(device);
+    });
+
+    setTimeout(() => {
+      this.ble.stopScan();
+    }, 5000);
+
+  }
   
   
 updateData() {
+
+  this.scan();
+
   const Http = new XMLHttpRequest();
   const url = 'https://www.random.org/integers/?num=1&min=1&max=100&col=1&base=10&format=plain';
   Http.open("GET", url);
@@ -85,12 +111,6 @@ updateData() {
 
 
 
-   ngOnInit() {
-
-   
-
-
-  } 
 
 
 
