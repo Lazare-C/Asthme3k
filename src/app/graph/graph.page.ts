@@ -28,14 +28,19 @@ import { BLE } from '@ionic-native/ble/ngx';
 
 
 export class GraphPage implements OnInit {
+  score: Array<number> = [0];
   
+
+  
+
 
 
    ngOnInit() {
   } 
+
   devices: any[] = [];
   public result: String = "Wsh bro";
-
+  public a3km: String = "(-__-)";
   
   constructor(public ble: BLE) {
 
@@ -45,19 +50,65 @@ export class GraphPage implements OnInit {
   
   scan() {
     this.ble.startScan([]).subscribe(device => {
-      this.result = JSON.stringify(device);
+      this.result = JSON.stringify(device, null, 2);
     });
 
     setTimeout(() => {
       this.ble.stopScan();
     }, 5000);
 
-  }
   
+}
+ 
+  blebondedDevices(){
+    this.ble.bondedDevices
+
+  }
+
+
+bleconnect(){
+  this.ble.autoConnect('30:AE:A4:02:79:F2', this.onConnected.bind(this), this.onDisconnected.bind(this));
+  }
+
+  onConnected(peripheral) {
+    this.a3km = `Connected to ${peripheral.id}`;
+    
+    this.blenotify(peripheral.id)
+  }
+
+  onDisconnected(peripheral) {
+    this.a3km = `Disconnected from ${peripheral.id}`
+  }
+
+
+  // Decode the ArrayBuffer into a typed Array based on the data you expect
+
+blenotify(deviceid){
+
+ 
+  this.ble.startNotification(deviceid, '4fafc201-1fb5-459e-8fcc-c5c9c331914b', 'beb5483e-36e1-4688-b7f5-ea07361b26a8').subscribe(buffer => {
+    
+    let data = new Uint32Array(buffer);
+    this.a3km = (JSON.stringify(data));
+    var djson = (JSON.stringify(data));
+    this.score.push(5)
+    this.chartData = [
+      { data: this.score, label: 'Account A' },
+
+    ];
+  });
+
+}
+
+
+
+
   
 updateData() {
 
   this.scan();
+
+  this.bleconnect();
 
   const Http = new XMLHttpRequest();
   const url = 'https://www.random.org/integers/?num=1&min=1&max=100&col=1&base=10&format=plain';
