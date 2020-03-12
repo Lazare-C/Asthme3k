@@ -1,7 +1,8 @@
 {
   "name": "ang03",
   "integrations": {
-    "capacitor": {}
+    "capacitor": {},
+    "cordova": {}
   },
   "type": "angular",
   "id": "b56dba70"

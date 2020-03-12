@@ -8,15 +8,24 @@
 </ion-header>
 
 
+
 <ion-content padding>
-<ion-button (click)="updateData()">Update</ion-button>
-<p>{{  result }}</p>
-<p>{{  a3km }}</p>
+
+    <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+
+  <ion-button (click)="updateData()">Update</ion-button>
+  <p>{{  result }}</p>
+  <p>{{  a3km }}</p>
+
+  <ion-progress-bar [value]="this.score.slice(-1)[0] /10000 " buffer="0.5"></ion-progress-bar>
+
   <div>
 
-  <canvas baseChart [chartType]="'line'" [datasets]="chartData" [labels]="chartLabels" [options]="chartOptions"
-    [legend]="true" (chartClick)="onChartClick($event)">
-  </canvas>
+    <canvas baseChart [chartType]="'line'" [datasets]="chartData" [labels]="chartLabels" [options]="chartOptions"
+      [legend]="true" (chartClick)="onChartClick($event)">
+    </canvas>
 
   </div>
 </ion-content>

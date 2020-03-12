@@ -15,6 +15,10 @@ import { HTTP } from '@ionic-native/http/ngx';
 import { BLE } from '@ionic-native/ble/ngx';
 
 
+
+import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
+
+
 @Component({
   selector: 'app-graph',
   templateUrl: './graph.page.html',
@@ -28,23 +32,36 @@ import { BLE } from '@ionic-native/ble/ngx';
 
 
 export class GraphPage implements OnInit {
+  //Déclarations des variables
   score: Array<number> = [0];
+  public data: any;
   
 
+  slide: any;
+
+  public last_data(slide){
+
+    return this.slide.slice(-1)[0]
+  }
+
+
   
-
-
-
-   ngOnInit() {
-  } 
+   ngOnInit() {} 
 
   devices: any[] = [];
   public result: String = "Wsh bro";
   public a3km: String = "(-__-)";
+  public progres: number = 5;
   
-  constructor(public ble: BLE) {
+  constructor(public ble: BLE, private localNotifications: LocalNotifications) {}
 
-
+  doRefresh(event) {
+    console.log('Begin async operation');
+    this.updateData();
+    setTimeout(() => {
+      console.log('Async operation has ended');
+      event.target.complete();
+    }, 2000);
   }
 
   
@@ -52,22 +69,21 @@ export class GraphPage implements OnInit {
     this.ble.startScan([]).subscribe(device => {
       this.result = JSON.stringify(device, null, 2);
     });
-
     setTimeout(() => {
       this.ble.stopScan();
-    }, 5000);
-
-  
+    }, 5000); 
 }
  
-  blebondedDevices(){
-    this.ble.bondedDevices
 
+bleconnect(ble_id: string){
+  this.ble.autoConnect(ble_id, this.onConnected.bind(this), this.onDisconnected.bind(this));
   }
 
+  bledisconect(ble_id: string){
+    this.ble.disconnect(ble_id).then(() => {
+      console.log('Disconnected');
+    });
 
-bleconnect(){
-  this.ble.autoConnect('30:AE:A4:02:79:F2', this.onConnected.bind(this), this.onDisconnected.bind(this));
   }
 
   onConnected(peripheral) {
@@ -88,10 +104,18 @@ blenotify(deviceid){
  
   this.ble.startNotification(deviceid, '4fafc201-1fb5-459e-8fcc-c5c9c331914b', 'beb5483e-36e1-4688-b7f5-ea07361b26a8').subscribe(buffer => {
     
-    let data = new Uint32Array(buffer);
-    this.a3km = (JSON.stringify(data));
-    var djson = (JSON.stringify(data));
-    this.score.push(5)
+    this.data = new Uint32Array(buffer);
+
+    this.a3km = (JSON.stringify(this.data));
+    var djson = (JSON.stringify(this.data));
+    this.score.push(this.data[0]);
+
+    this.localNotifications.schedule({
+      id: 1,
+      title: 'UPDATE',
+      text: this.score.slice(-1)[0].toString(10)
+    });
+ 
     this.chartData = [
       { data: this.score, label: 'Account A' },
 
@@ -100,33 +124,33 @@ blenotify(deviceid){
 
 }
 
+  blestopnotify(deviceId: string, serviceUUID: string, characteristicUUID: string){
+  this.ble.stopNotification(deviceId, serviceUUID, characteristicUUID)
+}
+  
+
 
 
 
   
 updateData() {
 
+  this.localNotifications.schedule({
+    id: 1,
+    title: 'Sync in progress',
+    text: this.score.slice(-1)[0].toString(10)
+  });
+
   this.scan();
+  this.bleconnect("30:AE:A4:02:79:F2");
 
-  this.bleconnect();
-
-  const Http = new XMLHttpRequest();
-  const url = 'https://www.random.org/integers/?num=1&min=1&max=100&col=1&base=10&format=plain';
-  Http.open("GET", url);
-  Http.send();
-
-  Http.onreadystatechange = (e) => {
-    console.log(Http.responseText)
-    this.chartData = [
+/*     this.chartData = [
       { data: [Math.floor(Math.random() * Math.floor(1000)), Math.floor(Math.random() * Math.floor(1000)), Math.floor(Math.random() * Math.floor(1000)), Math.floor(Math.random() * Math.floor(1000))], label: 'Account A' },
-
-    ];
-  }
-
-
-}
-
  
+    ];
+
+    */
+}
 
 
 
@@ -148,26 +172,6 @@ updateData() {
     console.log(event);
   }
    
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-  
-
-
 
 }
 

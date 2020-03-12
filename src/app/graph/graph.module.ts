@@ -11,16 +11,22 @@ import { ChartsModule } from 'ng2-charts';
 
 import { BLE } from '@ionic-native/ble/ngx';
 
+import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
+
+
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
     GraphPageRoutingModule,
-    ChartsModule
+    ChartsModule,
+    
   ],
   providers: [
-     BLE
+     BLE,
+    LocalNotifications
+    
     
   ],
   declarations: [GraphPage]

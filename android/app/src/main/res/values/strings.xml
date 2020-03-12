@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">ang03</string>
-    <string name="title_activity_main">ang03</string>
+    <string name="app_name">A3K</string>
+    <string name="title_activity_main">A3K</string>
     <string name="package_name">fr.lazarec.asthme3000</string>
     <string name="custom_url_scheme">fr.lazarec.asthme3000</string>
 </resources>
