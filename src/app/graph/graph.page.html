@@ -11,9 +11,50 @@
 
 <ion-content padding>
 
-    <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
-      <ion-refresher-content></ion-refresher-content>
-    </ion-refresher>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+ 
+
+    <ion-item>
+      <ion-label class="ion-text-wrap">
+        <ion-label>
+          <h2>DUST PPM</h2>
+        </ion-label>
+        <ion-label color="medium">
+          <h6>Le taux max est de : 2000 PPM</h6>
+        </ion-label>
+      </ion-label>
+      <ion-note slot="end" color="success">24 PPM</ion-note>
+    </ion-item>
+
+
+       <ion-item>
+         <ion-label class="ion-text-wrap">
+           <ion-label>
+             <h2>SMOKE PPM</h2>
+           </ion-label>
+           <ion-label color="medium">
+             <h6>Le taux max est de : 500 PPM</h6>
+           </ion-label>
+         </ion-label>
+         <ion-note slot="end" color="danger">500 PPM</ion-note>
+       </ion-item>
+
+
+
+
+
+  <!--     <ion-label color="primary">Primary Label</ion-label>
+    <ion-label color="secondary">Secondary Label</ion-label>
+    <ion-label color="danger">Danger Label</ion-label>
+    <ion-label color="light">Light Label</ion-label>
+    <ion-label color="dark">Dark Label</ion-label>
+ -->
+
+
+
+
 
   <ion-button (click)="updateData()">Update</ion-button>
   <p>{{  result }}</p>

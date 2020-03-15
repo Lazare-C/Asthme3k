@@ -27,28 +27,17 @@ import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 
 
 
-
-
-
-
 export class GraphPage implements OnInit {
   //Déclarations des variables
   score: Array<number> = [0];
   public data: any;
-  
-
-  slide: any;
-
-  public last_data(slide){
-
-    return this.slide.slice(-1)[0]
-  }
-
+  devices: any[] = [];
 
   
+
    ngOnInit() {} 
 
-  devices: any[] = [];
+  
   public result: String = "Wsh bro";
   public a3km: String = "(-__-)";
   public progres: number = 5;
@@ -101,7 +90,6 @@ bleconnect(ble_id: string){
 
 blenotify(deviceid){
 
- 
   this.ble.startNotification(deviceid, '4fafc201-1fb5-459e-8fcc-c5c9c331914b', 'beb5483e-36e1-4688-b7f5-ea07361b26a8').subscribe(buffer => {
     
     this.data = new Uint32Array(buffer);
