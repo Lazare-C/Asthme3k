@@ -2,8 +2,23 @@
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="home" text="Retour"></ion-back-button>
+
+
+      
     </ion-buttons>
+
+
+           <ion-buttons slot="primary">
+             <ion-button >
+               <ion-icon  slot="icon-only" ios="ellipsis-horizontal" md="ellipsis-vertical"></ion-icon>
+             </ion-button>
+           </ion-buttons>
+
     <ion-title>graph</ion-title>
+
+            
+             
+
   </ion-toolbar>
 </ion-header>
 
@@ -25,7 +40,7 @@
           <h6>Le taux max est de : 2000 PPM</h6>
         </ion-label>
       </ion-label>
-      <ion-note slot="end" color="success">24 PPM</ion-note>
+      <ion-note slot="end" color="success">{{DUST_PPM_HTML}} PPM</ion-note>
     </ion-item>
 
 
@@ -35,10 +50,10 @@
              <h2>SMOKE PPM</h2>
            </ion-label>
            <ion-label color="medium">
-             <h6>Le taux max est de : 500 PPM</h6>
+             <h6>Le taux max est de : 750 PPM</h6>
            </ion-label>
          </ion-label>
-         <ion-note slot="end" color="danger">500 PPM</ion-note>
+         <ion-note slot="end" color="danger">{{SMOKE_PPM_HTML}} PPM</ion-note>
        </ion-item>
 
 
@@ -55,7 +70,7 @@
 
 
 
-
+<ion-button ion-button (click)="presentModal()">Open Modal</ion-button>
   <ion-button (click)="updateData()">Update</ion-button>
   <p>{{  result }}</p>
   <p>{{  a3km }}</p>

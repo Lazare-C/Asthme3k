@@ -1,165 +1,194 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from "@angular/core";
 
+import { LoadingController, ModalController } from "@ionic/angular";
 
-import { LoadingController } from '@ionic/angular';
-
-import { ChartsModule } from 'ng2-charts'; // <- HERE
+import { ChartsModule } from "ng2-charts"; // <- HERE
 import {
   IBarChartOptions,
   IChartistAnimationOptions,
   IChartistData
-} from 'chartist';
-import { ChartEvent, ChartType } from 'ng-chartist';
-import { HTTP } from '@ionic-native/http/ngx';
+} from "chartist";
+import { ChartEvent, ChartType } from "ng-chartist";
+import { HTTP } from "@ionic-native/http/ngx";
 
-import { BLE } from '@ionic-native/ble/ngx';
+import { BLE } from "@ionic-native/ble/ngx";
 
+import { LocalNotifications } from "@ionic-native/local-notifications/ngx";
 
-
-import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
-
+import { DetailsPage } from "../details/details.page";
+import { async } from "rxjs/internal/scheduler/async";
 
 @Component({
-  selector: 'app-graph',
-  templateUrl: './graph.page.html',
-  styleUrls: ['./graph.page.scss'],
+  selector: "app-graph",
+  templateUrl: "./graph.page.html",
+  styleUrls: ["./graph.page.scss"]
 })
-
-
-
 export class GraphPage implements OnInit {
   //Déclarations des variables
   score: Array<number> = [0];
   public data: any;
   devices: any[] = [];
 
-  
+  DUST_PPM_HTML: string = "n/a";
+  SMOKE_PPM_HTML: string = "n/a";
 
-   ngOnInit() {} 
+  ngOnInit() {}
 
-  
-  public result: String = "Wsh bro";
-  public a3km: String = "(-__-)";
+  public result: String = "Print result";
+  public a3km: String = "data module";
   public progres: number = 5;
-  
-  constructor(public ble: BLE, private localNotifications: LocalNotifications) {}
+
+  constructor(
+    public ble: BLE,
+    private localNotifications: LocalNotifications,
+    public modalController: ModalController
+  ) {}
+
+  async presentModal() {
+    const modal = await this.modalController.create({
+      component: DetailsPage,
+      cssClass: "overlay",
+      componentProps: {
+        firstName: "Douglas",
+        lastName: "Adams",
+        middleInitial: "N"
+      }
+    });
+    return await modal.present();
+  }
 
   doRefresh(event) {
-    console.log('Begin async operation');
+    console.log("Begin async operation");
+
+    this.ble.refreshDeviceCache("30:AE:A4:02:79:F2", 10000).then(
+      discoveredServices => {
+        this.a3km =
+          "The new discovered services after the clean: " + discoveredServices;
+      },
+      error => {
+        console.log("Refresh device cache failed.");
+      }
+    );
+
     this.updateData();
     setTimeout(() => {
-      console.log('Async operation has ended');
+      console.log("Async operation has ended");
       event.target.complete();
     }, 2000);
   }
 
-  
   scan() {
     this.ble.startScan([]).subscribe(device => {
       this.result = JSON.stringify(device, null, 2);
+      this.bleconnect("30:AE:A4:02:79:F2");
     });
     setTimeout(() => {
       this.ble.stopScan();
-    }, 5000); 
-}
- 
-
-bleconnect(ble_id: string){
-  this.ble.autoConnect(ble_id, this.onConnected.bind(this), this.onDisconnected.bind(this));
+    }, 5000);
   }
 
-  bledisconect(ble_id: string){
-    this.ble.disconnect(ble_id).then(() => {
-      console.log('Disconnected');
-    });
+  bleconnect(ble_id: string) {
+    this.ble.autoConnect(
+      ble_id,
+      this.onConnected.bind(this),
+      this.onDisconnected.bind(this)
+    );
+  }
 
+  bledisconect(ble_id: string) {
+    this.ble.disconnect(ble_id).then(() => {
+      console.log("Disconnected");
+    });
   }
 
   onConnected(peripheral) {
-    this.a3km = `Connected to ${peripheral.id}`;
-    
-    this.blenotify(peripheral.id)
+    this.a3km = `Connecter a ${peripheral.id}`;
+    this.blenotify(peripheral.id);
   }
 
   onDisconnected(peripheral) {
-    this.a3km = `Disconnected from ${peripheral.id}`
+    this.a3km = `Disconnected from ${peripheral.id}`;
   }
-
 
   // Decode the ArrayBuffer into a typed Array based on the data you expect
 
-blenotify(deviceid){
+  blenotify(deviceid) {
+    this.ble
+      .startNotification(
+        deviceid,
+        "4fafc201-1fb5-459e-8fcc-c5c9c331914b",
+        "1265470e-65eb-11ea-bc55-0242ac130003"
+      )
+      .subscribe(buffer => {
+        this.a3km = "tentative de recupération des données";
+        this.data = new Uint32Array(buffer);
+        this.a3km = buffer;
+        this.a3km = JSON.stringify(this.data);
+        var djson = JSON.stringify(this.data);
+        this.score.push(this.data[0]);
 
-  this.ble.startNotification(deviceid, '4fafc201-1fb5-459e-8fcc-c5c9c331914b', 'beb5483e-36e1-4688-b7f5-ea07361b26a8').subscribe(buffer => {
-    
-    this.data = new Uint32Array(buffer);
+        this.localNotifications.schedule({
+          id: 1,
+          title: "UPDATE",
+          text: this.score.slice(-1)[0].toString(10)
+        });
 
-    this.a3km = (JSON.stringify(this.data));
-    var djson = (JSON.stringify(this.data));
-    this.score.push(this.data[0]);
+        this.chartData = [
+          {
+            data: this.score,
+            label: "Account A"
+          }
+        ];
+      });
+  }
 
+  blestopnotify(
+    deviceId: string,
+    serviceUUID: string,
+    characteristicUUID: string
+  ) {
+    this.ble.stopNotification(deviceId, serviceUUID, characteristicUUID);
+  }
+
+  updateData() {
     this.localNotifications.schedule({
       id: 1,
-      title: 'UPDATE',
+      title: "Sync in progress",
       text: this.score.slice(-1)[0].toString(10)
     });
- 
-    this.chartData = [
-      { data: this.score, label: 'Account A' },
 
-    ];
-  });
+    this.scan();
 
-}
+    /*     this.chartData = [
+          { data: [Math.floor(Math.random() * Math.floor(1000)), Math.floor(Math.random() * Math.floor(1000)), Math.floor(Math.random() * Math.floor(1000)), Math.floor(Math.random() * Math.floor(1000))], label: 'Account A' },
+     
+        ];
 
-  blestopnotify(deviceId: string, serviceUUID: string, characteristicUUID: string){
-  this.ble.stopNotification(deviceId, serviceUUID, characteristicUUID)
-}
-  
-
-
-
-
-  
-updateData() {
-
-  this.localNotifications.schedule({
-    id: 1,
-    title: 'Sync in progress',
-    text: this.score.slice(-1)[0].toString(10)
-  });
-
-  this.scan();
-  this.bleconnect("30:AE:A4:02:79:F2");
-
-/*     this.chartData = [
-      { data: [Math.floor(Math.random() * Math.floor(1000)), Math.floor(Math.random() * Math.floor(1000)), Math.floor(Math.random() * Math.floor(1000)), Math.floor(Math.random() * Math.floor(1000))], label: 'Account A' },
- 
-    ];
-
-    */
-}
-
-
-
+        */
+  }
 
   chartOptions = {
     responsive: true
   };
 
   chartData = [
-    { data: [330, 600, 260, 700], label: 'Account A' },
-    { data: [120, 455, 100, 340], label: 'Account B' },
-    { data: [45, 67, 800, 500], label: 'Account C' }
+    {
+      data: [330, 600, 260, 700],
+      label: "Account A"
+    },
+    {
+      data: [120, 455, 100, 340],
+      label: "Account B"
+    },
+    {
+      data: [45, 67, 800, 500],
+      label: "Account C"
+    }
   ];
 
-  chartLabels = ['January', 'February', 'Mars', 'April'];
-
+  chartLabels = ["January", "February", "Mars", "April"];
 
   onChartClick(event) {
     console.log(event);
   }
-   
-
 }
-
