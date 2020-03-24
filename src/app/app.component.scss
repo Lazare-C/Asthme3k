@@ -1,0 +1,11 @@
+    .modal-wrapper {
+        background: transparent !important;
+    }
+
+    .my-custom-modal-css {
+        --background: transparent !important;
+    }
+
+    .modal-transparency {
+        --background: var(--ion-background-color, rgba(0, 0, 0, 0.2)) !important;
+    }

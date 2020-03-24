@@ -1,7 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-
 import { LoadingController, ModalController } from "@ionic/angular";
-
 import { ChartsModule } from "ng2-charts"; // <- HERE
 import {
   IBarChartOptions,
@@ -17,6 +15,7 @@ import { LocalNotifications } from "@ionic-native/local-notifications/ngx";
 
 import { DetailsPage } from "../details/details.page";
 import { async } from "rxjs/internal/scheduler/async";
+import { ActivatedRoute, Router } from "@angular/router";
 
 @Component({
   selector: "app-graph",
@@ -28,11 +27,10 @@ export class GraphPage implements OnInit {
   score: Array<number> = [0];
   public data: any;
   devices: any[] = [];
-
+  a3km_id: string;
   DUST_PPM_HTML: string = "n/a";
   SMOKE_PPM_HTML: string = "n/a";
-
-  ngOnInit() {}
+  id: any;
 
   public result: String = "Print result";
   public a3km: String = "data module";
@@ -41,8 +39,18 @@ export class GraphPage implements OnInit {
   constructor(
     public ble: BLE,
     private localNotifications: LocalNotifications,
-    public modalController: ModalController
-  ) {}
+    public modalController: ModalController,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {
+    this.route.queryParams.subscribe(params => {
+      if (this.router.getCurrentNavigation().extras.state) {
+        this.a3km_id = this.router.getCurrentNavigation().extras.state.user;
+      }
+    });
+  }
+
+  ngOnInit() {}
 
   async presentModal() {
     const modal = await this.modalController.create({
@@ -117,7 +125,7 @@ export class GraphPage implements OnInit {
       .startNotification(
         deviceid,
         "4fafc201-1fb5-459e-8fcc-c5c9c331914b",
-        "1265470e-65eb-11ea-bc55-0242ac130003"
+        "fc2735a2-1adc-48b4-95ff-a8df87c7f8e9"
       )
       .subscribe(buffer => {
         this.a3km = "tentative de recupération des données";

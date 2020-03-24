@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 
 import { HomePage } from './home.page';
 
+import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 
 
 @NgModule({
@@ -15,10 +16,13 @@ import { HomePage } from './home.page';
     IonicModule,
     RouterModule.forChild([
       {
-        path: '',
+        path: "",
         component: HomePage
       }
     ])
+  ],
+  providers: [
+    BarcodeScanner,
   ],
   declarations: [HomePage]
 })

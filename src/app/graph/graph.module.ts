@@ -12,6 +12,15 @@ import { ChartsModule } from 'ng2-charts';
 import { BLE } from '@ionic-native/ble/ngx';
 
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
+import { RouterModule, Routes } from '@angular/router';
+
+const routes: Routes = [
+  {
+    path: "",
+    component: GraphPage
+  }
+];
+
 
 
 @NgModule({
@@ -21,14 +30,9 @@ import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
     IonicModule,
     GraphPageRoutingModule,
     ChartsModule,
-    
+    RouterModule.forChild(routes)
   ],
-  providers: [
-     BLE,
-    LocalNotifications
-    
-    
-  ],
+  providers: [BLE, LocalNotifications],
   declarations: [GraphPage]
 })
 export class GraphPageModule {}
